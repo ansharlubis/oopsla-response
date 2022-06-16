@@ -7,7 +7,7 @@ Thank for the time and effort spent by the reviewers in providing useful feedbac
 The response is structured as follows:
 
 1. Response to points listed by the reviewers as *Questions for Author Response*.
-2. Response to points we consider are the main concerns of the reviewers.
+2. Response to points we consider are the main concerns of the reviewers from the *Assessment*.
 3. Response to other comments, questions, and concerns uncovered in the previous sections.
 
 ## Response to questions
@@ -18,17 +18,21 @@ Reviewer #703A did not list any points as *Questions for Author Response*.
 
 ### Reviewer #703B
 
-1. What would be a common usage scenario of this language?
+1. What would be a common usage scenario of this language? 
+
+    *(Related comments)* Do you assume this approach is a workaround for broken backward compatibility?
 
 **Reply:** Summarizing the motivating example in Section 2, the usage scenario of BatakJava's multi-version programming is to allow gradual updates of upstream dependencies with breaking changes.
 
 2. Is it straightforward to handle more than three versions?
 
-**Reply:** As shown by the typing rules in Section 3, the inference is not limited to two versions.
+**Reply:** As shown by the typing rules in Section 3, the inference is not limited to two versions, although the complexity of the solving does grow with the number of versions.
 
-3. Is it straightforward to apply this approach to other languages?
+3. Is it straightforward to apply this approach to other languages? 
 
-**Reply:** 
+    *(Related comments)* Why OOP and why class-wise versions? If the same principle is applied to imperative or functional programming languages, what would happen?
+
+**Reply:** Since the approach we take is a relatively simple type inference with global constraints, it should be applicable to other imperative languages.
 
 ### Reviewer #703C
 
@@ -54,19 +58,77 @@ We plan to further improve the implementeation by requiring the solver to output
 
 The biggest problem described by the reviewer concerns the motivation and practical viability of our approach. It can be summarized into the following points:
 
-1. 
+1. Parallel use of multiple versions of a class can lead to diverging system. In long-term practice this may turn into a maintenance disaster.
+
+**Reply:**
+
+2. Making seemingly innocent change in one part of the program can result in a completely different result for the global type inference.
+
+**Reply:**
+
+3. No flexibility in the choice of superclasses. The reviewer is also doubtful if let generalization can allow it.
+
+    *(Related comments)*
+
+    L.530: "This implies that the current calculus does not yet allow different instances of class C!n to inherit different versions of D." -- Is that referring to the inheritance flexibility I complained about above?
+
+**Reply:**
+
+4. More flexibility may result in code to blow-up exponentially during translation.
+
+**Reply:**
+
+5. The compilation requires a whole program analysis, making it not modular and unscalable.
+
+**Reply:**
 
 The reviewer also had the following concerns in regards to the formalization presented in our paper:
 
-1.
+1. The formalization appears to be sloppy in some places.
+
+**Reply:**
+
+2. The constraint system appears to be different from the implementation described later. The paper made an unsubstantiated claim that they are equally expressive.
+
+    *(Related comments)*
+
+    L.656: A constraint of the form X=C!n does not seem to allow any path variables. How can it achieve the same expressiveness?
+
+**Reply:**
 
 ### Reviewer #703B
 
+1. Backward compatibility is sometimes intentionally made to force users to update their code for various reasons. Multi-version programming may hinder this update.
+
+**Reply:**
+
+2. When the number of versions accumulate, the target code size and complexity would be larger.
+
+**Reply:**
+
 ### Reviewer #703C
 
-### Reviewer #703B
+1. My biggest concern is that I'm not sure that BatakJava is actually solving a problem that programmers have, and that even if it is its not doing so in a way that is likely to prevent bugs down the line. 
 
-### Reviewer #703C
+**Reply:**
+
+2. BatakJava might enable the programmer to accidentally build software that has unexpected behavior that the "standard" Java compiler would have forbidden.
+
+    *(Related comments)*
+    
+    251: yes, all of these methods are available in both versions. But there is not a guarantee that their specifications are the same - so it is possible that choosing one version will result in different behavior than choosing a different version. This seems to me like it would be a good source of so-called "spooky action at a distance": a change is seemingly-unrelated code might change the behavior of another seemingly-unrelated piece of code, because one of the two might be the source of a version constraint that changes which implementation of a method gets called at run time. The same issue can occur with dynamic dispatch and generics, and in my experience it is a huge source of problems, especially for students.
+
+**Reply:**
+
+3. The evaluation should involve actual programmers and see whether they think it is a good idea.
+
+    *(Related comments)*
+
+    810: this evaluation doesn't really tell me anything. Is this a real Java program (I think no, it's just a snippet you artificially copied out of a real library)? Is this practical at all on programs of even moderate size? What are compilation times like? Any of these questions would be more interesting than what you have here.
+
+    969: no kidding it produces many clones. A good evaluation would have included a measurement of how many.
+
+**Reply:**
 
 ## Response to other comments
 
