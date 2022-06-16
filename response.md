@@ -46,9 +46,19 @@ We can observe that all the necessary constraint for a path variable are also pr
 
 1. What are compilation times like for your prototype? Do they scale linearly with the size of the program (the way a traditional typechecker that does not call a solver should)?
 
+**Reply:** We have not yet conducted any empirical evaluation of the compiler. The simple case study we conducted involved 38 class definitions, totaling around 1200 LOC; the compilation takes 2.1 times longer.
+
+The current inference does not scale linearly, it grows exponentially in regards to the number of versions.
+
 2. Can a programmer always use the type errors produced by your type checker to guide them to the source of the problem? What if the solver times out?
 
+**Reply:** The currently implemented prototype does not yet specific where the source of the type problem. 
+
+We plan to further improve the implementeation by requiring the solver to output problematic variables and directing users to the expressions associated with those variables.
+
 3. Why do you think BatakJava programs are less likely to have defects than standard Java programs? Can you provide any evidence for that argument?
+
+**Reply:** There is a trade-off in adding another variability axis to class definitions. The ability of multi-version programming opens up possibility to program with multiple definitions of the same class at the same time, hopefully making adoption of upstream update easier. However, as pointed out by both Reviewer #703A and #703C, the long-term inclusion of multiple versions can be hard to maintain.
 
 ## Response to main concerns
 
