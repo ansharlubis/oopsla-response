@@ -84,7 +84,7 @@ A possible approach to this is to keep all the expressions performing as they ar
 
 4. More flexibility may result in code to blow-up exponentially during translation.
 
-**Reply:** 
+**Reply:** In practice, programmers generally do not require all the available versions of their dependencies to run their programs. By limiting the imported versions only to the needed versions, the blow-up during translation can be kept under control.
 
 5. The compilation requires a whole program analysis, making it not modular and unscalable.
 
@@ -220,50 +220,46 @@ It would not necessarily be difficult to explain to a programmer. The error happ
 
 **Reply:**  We have added a subsection for *paths* before explaining the syntax.
 
-8. Fig. 6: the second rule from the top says that a type is a subtype of any valid instantiation of its superclass, right? But, shouldn't the type only be a subtype of the concrete superclass and its compatible-with-the-actual-class versions? The rule is unclear and the text does not help.
-
-**Reply:**
-
-9. 464: I think this implies that no type variable can be a subtype of another type variable. That significantly reduces the expressiveness of the language, no?
+8. 464: I think this implies that no type variable can be a subtype of another type variable. That significantly reduces the expressiveness of the language, no?
 
 **Reply:** Within the limited syntax that FBJ has, there is no subtype check between two type variables. Subtype check is used to check whether arguments’ types are subtypes of method and constructor parameters (declared as `C#N`), whether a cast (declared as `C#N`) is a supertype of an expression, and whether a method body is a subtype of the method return type (declared as `C#N`).
 Additionally, a subtype check between two type variables has no meaning as both type variables can be any type within the program.
 
-10. 471: do something to highlight the differences for the reader, then
+9. 471: do something to highlight the differences for the reader, then
 
 **Reply:** For simplicity, we will revise the rules so that all the expressions are typed with a type variable X#N, hence avoiding the confusion of having a constraint in the form of `{C=C}`.
 
-11. 612: this soundness theorem I guess makes some sense, but it doesn't tell me what I want to know, which is that your system guarantees that some kind of mistake is impossible (but, your system doesn't do this, so it's not clear what you mean by "soundness")
+10. 612: this soundness theorem I guess makes some sense, but it doesn't tell me what I want to know, which is that your system guarantees that some kind of mistake is impossible (but, your system doesn't do this, so it's not clear what you mean by "soundness")
 
-**Reply:** 
+**Reply:** As described in Section 3.6, the preservation property only guarantees that the same type and version substitution can always be found for an expression, before and after a reduction.
 
-12. 689: it is not intuitive why you need to generate constraints on primitives at all, since they can't have versions. I think the reason, as you mention later in the text, is that constraints on method parameters and return types might require them to be certain kinds of primitives.
+11. 689: it is not intuitive why you need to generate constraints on primitives at all, since they can't have versions. I think the reason, as you mention later in the text, is that constraints on method parameters and return types might require them to be certain kinds of primitives.
 
 **Reply:** Method invocations with different return primitive types require constraints to primitive types. On the other hand, it’s true that primitive type annotations do not require any constraints.
 
 Note: The implementation does not need to generate constraints on primitive type annotations.
 
-13. 743: you describe in text what I think should be another constraint ("Square!1's superclass and X2' have to be the same")
+12. 743: you describe in text what I think should be another constraint ("Square!1's superclass and X2' have to be the same")
 
 **Reply:** The constraint `{X1=C and X2’=C}` is equivalent to `{X1=C and X2’=X1}`. We do not need `{X2’=X1}` as long as we always give both variables the same type in the constraint.
 
-14. 751: be explicit that this means the constraint solver must find all solutions, not just one that satisfies the constraints. I'm sure this has performance implications for your tool.
+13. 751: be explicit that this means the constraint solver must find all solutions, not just one that satisfies the constraints. I'm sure this has performance implications for your tool.
 
 **Reply:** It is true that finding the whole set of solutions with a large number of versions can cause the solver to exceed the memory limit to find all the solutions. The current feature provided by the prototype is limiting the versions of imported versions.
 
 A future approach is by specifying the priority constraint for each type variable. The default priority can be set to the latest version or a certain range of version that the users choose.
 
-15. 804: if you tried to do this with a real Java program, you'd probably quickly start running into the bytecode class size limit. You should mention that that means this will probably never be practical without some way to handle that, due to the size blowup. (forward ref to FW is okay)
+14. 804: if you tried to do this with a real Java program, you'd probably quickly start running into the bytecode class size limit. You should mention that that means this will probably never be practical without some way to handle that, due to the size blowup. (forward ref to FW is okay)
 
 **Reply:** Yes, the number of constraints and solutions grow exponentially in regard to the program size, which would be impractical with large programs. The prototype and the formalization here serve as a base from which we plan to optimize the inference and compilation to make it more feasible, something that we will mention later on in future work.
 
 In reality, programmers do not require the whole history of a library in their programs. Therefore, as long as we can properly specify the range of versions that programmers may require, we can limit how much code is generated.
 
-16. 886: No attempts here to explain why what these other things have done is different than what you have done. This reads like a list of other papers you know, not a comparison between your work and related work.
+15. 886: No attempts here to explain why what these other things have done is different than what you have done. This reads like a list of other papers you know, not a comparison between your work and related work.
 
 **Reply:** We will follow the suggestion to elaborate on the difference more between our work and previous work in the revision.
 
-17. 920: why does being in the language matter? in my experience, Maven shadowing in Java works just fine.
+16. 920: why does being in the language matter? in my experience, Maven shadowing in Java works just fine.
 
 **Reply:** Maven shadowing can cause issues to downstream users when common transitive dependencies are packaged together in the jar. Suppose the downstream `C` requires `D` and `E`. `D` is also shaded and packaged together with `E`. Problem can happen when `C` attempts to pass `D` from its direct dependency to `E` because `D` is already renamed in `E`.
 
